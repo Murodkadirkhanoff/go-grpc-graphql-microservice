@@ -27,42 +27,39 @@ func (c *Client) Close() {
 }
 
 func (c *Client) PostAccount(ctx context.Context, name string) (*Account, error) {
-	r, err := c.service.PostAccount{
+	r, err := c.service.PostAccount(
 		ctx,
 		&pb.PostAccountRequest{
 			Name: name,
 		},
-	}
+	)
 	if err != nil {
 		return nil, err
 	}
 	return &Account{
-		ID:   r.Account.ID,
-		Name: r.Account.Name,
-	}
-}
-
-func (c *Client) GetAccount(ctx context.Context, id string) (*Account, error) {
-	r, err := c.service.GetAccount{
-		ctx,
-		&pb.GetAccountRequest{
-			Id:   r.Account.ID,
-			Name: r.Account.Name,
-		},
-	}
-	if err != nil {
-		return nil, err
-	}
-	return &Account{
-		ID:   r.Account.ID,
+		ID:   r.Account.Id,
 		Name: r.Account.Name,
 	}, nil
 }
 
-func (c *Client) GetAccounts(ctx context.Context, skip uint64, take uint64) ([]*Account, error) {
+func (c *Client) GetAccount(ctx context.Context, id string) (*Account, error) {
+	r, err := c.service.GetAccount(
+		ctx,
+		&pb.GetAccountRequest{Id: id},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &Account{
+		ID:   r.Account.Id,
+		Name: r.Account.Name,
+	}, nil
+}
+
+func (c *Client) GetAccounts(ctx context.Context, skip uint64, take uint64) ([]Account, error) {
 	r, err := c.service.GetAccounts(
 		ctx,
-		*pb.GetAccountsRequest{
+		&pb.GetAccountsRequest{
 			Skip: skip,
 			Take: take,
 		},
@@ -76,7 +73,7 @@ func (c *Client) GetAccounts(ctx context.Context, skip uint64, take uint64) ([]*
 
 	for _, a := range r.Accounts {
 		accounts = append(accounts, Account{
-			ID:   a.ID,
+			ID:   a.Id,
 			Name: a.Name,
 		})
 	}
